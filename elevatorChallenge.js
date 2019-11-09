@@ -2,9 +2,9 @@ class Elevator {
   constructor(id) {
     this.id = id;
     this.position = 1;
+    this.floorRequests = [];
     this.open = false;
     this.peopleInside = 0;
-    this.moving = false;
     this.numTrips = false;
     this.direction = 0;
   }
@@ -38,7 +38,17 @@ class Elevator {
   }
 
   isMoving() {
-    return this.moving
+    return this.direction != 0;
+  }
+
+  addRequest(floor) {
+    this.floorRequests.push(floor)
+  }
+  //This situation we use this in is for floor requests. If there is more than one
+  //occupant then this elevator is moving. If so then we need to pick the closest
+  //(lowest) floor requested to stop off at.
+  getOrderedRequests(floor) {
+    return this.floorRequests.sort();
   }
 
   toggleDoors() {
@@ -57,13 +67,11 @@ class Elevator {
 
     //Move until we get there.
     while (this.position != floor) {
-      this.isMoving = true;
       console.log(this.position)
       this.position = this.position + this.direction;
     }
 
     //We're done moving. Add 1 to trips
-    this.isMoving = false;
     this.numTrips = this.numTrips + 1;
   }
 
@@ -113,11 +121,17 @@ class ElevatorController {
     closestElevator.peopleInside += 1;
     closestElevator.toggleDoors();
 
-    //Move to floor. Take away an occupant. Toggle doors.
-    closestElevator.move(floorReq)
-    closestElevator.toggleDoors();
-    closestElevator.peopleInside -= 1;
-    closestElevator.toggleDoors();
+    //Get the list of current requests in the object
+    closestElevator.addRequest(floorAt)
+
+    while(closestElevator.getOrderedRequests().length != 0)
+    orderedRequests.forEach(function(floor) {
+      //Move to floor. Take away an occupant. Toggle doors.
+      closestElevator.move(floor)
+      closestElevator.toggleDoors();
+      closestElevator.peopleInside -= 1;
+      closestElevator.toggleDoors();
+    });
   }
 
   getClosestElevator(floorAt) {
@@ -127,7 +141,6 @@ class ElevatorController {
 
     //Loop through each elevator object. Check if it needs service or is
     //currently moving.
-    //
     //Get the distance for that elevator and replace the selected elevator
     //until the smallest distance is found. Return the selected elevator.
     this.elevators.forEach(function(currentElevator) {
