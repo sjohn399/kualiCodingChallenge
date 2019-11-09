@@ -1,26 +1,31 @@
 class Elevator {
   constructor(id) {
-    //Set the attributes of the elevator. Give it some unique id.
+    this.id = id;
+    this.position = 1;
+    this.open = false;
+    this.occupied = false;
+    this.isMoving = false;
+    this.numTrips = false;
   }
 
   getElevatorPosition() {
-    //return the elevators position
+    return this.position;
   }
 
   isOpen() {
-    //return whether the elevator is open
+    return this.open;
   }
 
   needsService() {
-    //Checks if the elevator needs service
+    return this.numTrips >= 100;
   }
 
   getIsMoving() {
-    //Returns whether the elevator is moving or not
+    return this.isMoving
   }
 
   toggleDoors() {
-    //Toggles the doors
+    this.open = !this.open
   }
 
   move(floor) {
@@ -30,15 +35,74 @@ class Elevator {
 
 class ElevatorController {
   constructor(numElevators, numFloors) {
-    //Initialize elevator objects and set floor min and max
+    this.elevators = [];
+    for (i = 0; i < numElevators; i++) {
+      newElevator = new Elevator(i + 1)
+      this.elevators.push(newElevator)
+    }
+
+    this.minFloor = 1;
+    this.maxFloor = numFloors;
   }
 
   getAllElevators() {
-    //Return all the elevators
+    return this.elevators
   }
 
   callElevator(floorAt, floorReq) {
-    //Call the elevator. Pass in what floor it is being called from
-    //and what floor is being requested to go to
+    //Check for invalid parameters. Hopefully there's some parameter validation
+    //from where these are coming from.
+    var inputValid = this.isInputValid(floorAt, floorReq)
+
+    if (!inputValid) {
+      return
+    }
+
+    var closestElevator = this.getClosestElevator(floorAt);
+
+  }
+
+  getClosestElevator(floorAt) {
+    //Set the initial closest distance to something higher than the max
+    var closestDistance = this.maxFloor + 1;
+    var selectedElevator;
+
+    //Loop through each elevator object. Check if it needs service or is
+    //currently moving. Go to the next object if either is true.
+    //Get the distance for that elevator and replace the selected elevator
+    //until the smallest distance is found. Return the selected elevator.
+    this.elevators.forEach(function(currentElevator) {
+      if(currentElevator.needsService() || currentElevator.getIsMoving()) {
+        return
+      }
+
+      var distance = Math.abs(currentElevator.getElevatorPosition() - floorAt);
+
+      if(closestDistance > distance) {
+        closestDistance = distance;
+        selectedElevator = currentElevator;
+      }
+    })
+
+    return selectedElevator
+  }
+
+  isInputValid(floorAt, floorReq) {
+    try {
+      if(floorAt < this.minFloor ||
+         floorReq > this.maxFloor) {
+           throw "Floor destination out of range";
+         }
+      if (floorAt < this.minFloor ||
+          floorReq > this.maxFloor) {
+            throw "Floor requested out of range";
+          }
+    }
+    catch(err) {
+      alert(err);
+      return false
+    }
+
+    return true
   }
 }
