@@ -18,7 +18,7 @@ The callElevator function is the maestro here. It finds the closest elevator
 available elevator (not needing service and has not passed the floor if moving) and
 returns it to be given the request. Requests are added to a floorRequests array in
 the addRequests function and are sorted based on what direction was established. In
-ascending order if we're going down (at 3 going to 2 and 1) and descending order if
+descending order if we're going down (at 3 going to 2 and 1) and ascending order if
 we're going up (at 3 going to 4 and 5).
 
 While each elevator object has requests (length not of zero) it will shift the first
