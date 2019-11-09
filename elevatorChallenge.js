@@ -4,7 +4,7 @@ class Elevator {
     this.position = 1;
     this.floorRequests = [];
     this.open = false;
-    this.peopleInside = 0;
+    this.occupied = false;
     this.numTrips = false;
     this.direction = 0;
   }
@@ -40,7 +40,7 @@ class Elevator {
   }
 
   isOccupied() {
-    return this.peopleInside > 0;
+    return this.occupied;
   }
 
   isMoving() {
@@ -52,14 +52,8 @@ class Elevator {
   //an elevator at floor 3 that can take requests for floor 4 and 5. We don't
   //want to pass floors that are on the way. The opposite is true for going down
   //if there is no direction that means that the elevator is stopped and should
-  //take the floor we want to go to (there should then only be the floor requested
-  //in the floorRequests array).
+  //take the floorAt first. Pushing in this order gurantees that.
   addRequests(floorAt, floorReq) {
-
-    if (this.direction = 0) {
-      this.floorRequests.push(floorReq)
-      return [floorAt]
-    }
 
     this.floorRequests.push(floorAt)
     this.floorRequests.push(floorReq)
@@ -148,6 +142,7 @@ class ElevatorController {
 
     while(closestElevator.getFloorRequests().length != 0) {
         //Move to floor. Take away an occupant. Toggle doors.
+        closestElevator.occupied = true;
         var nextFloor = closestElevator.getFloorRequest().shift();
         closestElevator.move(nextFloor)
         closestElevator.toggleDoors();
