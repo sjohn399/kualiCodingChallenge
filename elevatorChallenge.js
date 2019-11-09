@@ -41,14 +41,20 @@ class Elevator {
     return this.direction != 0;
   }
 
-  addRequest(floor) {
-    this.floorRequests.push(floor)
+  addRequests(floorAt, floorReq) {
+    this.floorRequests.push(floorAt)
+    this.floorRequests.push(floorReq)
+
+    if (this.direction == 1 ) {
+      this.floorRequests = this.floorRequests.sort();
+    }
+
   }
   //This situation we use this in is for floor requests. If there is more than one
   //occupant then this elevator is moving. If so then we need to pick the closest
   //(lowest) floor requested to stop off at.
-  getOrderedRequests(floor) {
-    return this.floorRequests.sort();
+  getFloorRequests(floor) {
+    return this.floorRequests;
   }
 
   toggleDoors() {
@@ -115,23 +121,18 @@ class ElevatorController {
 
     var closestElevator = this.getClosestElevator(floorAt);
 
-    //Move to floor. Add an occupant. Toggle doors.
-    closestElevator.move(floorAt)
-    closestElevator.toggleDoors();
-    closestElevator.peopleInside += 1;
-    closestElevator.toggleDoors();
-
     //Get the list of current requests in the object
-    closestElevator.addRequest(floorAt)
+    closestElevator.addRequests(floorAt, floorReq)
 
-    while(closestElevator.getOrderedRequests().length != 0)
-    orderedRequests.forEach(function(floor) {
-      //Move to floor. Take away an occupant. Toggle doors.
-      closestElevator.move(floor)
-      closestElevator.toggleDoors();
-      closestElevator.peopleInside -= 1;
-      closestElevator.toggleDoors();
-    });
+    while(closestElevator.getFloorRequests().length != 0) {
+        //Move to floor. Take away an occupant. Toggle doors.
+        var nextFloor = closestElevator.getFloorRequest().shift();
+        closestElevator.move(nextFloor)
+        closestElevator.toggleDoors();
+        closestElevator.toggleDoors();
+    }
+
+    closestElevator.occupied = false
   }
 
   getClosestElevator(floorAt) {
