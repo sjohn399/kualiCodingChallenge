@@ -6,6 +6,7 @@ class Elevator {
     this.occupied = false;
     this.isMoving = false;
     this.numTrips = false;
+    this.direction = 0;
   }
 
   getElevatorPosition() {
@@ -29,7 +30,30 @@ class Elevator {
   }
 
   move(floor) {
-    //Move the elevator to and from floors
+
+    this.direction = this.getDirection(floor)
+
+    //Move until we get there.
+    while (this.position != floor) {
+      this.isMoving = true;
+      this.position = this.position + this.direction;
+    }
+
+    //We're done moving. Add 1 to trips
+    this.isMoving = false;
+    this.numTrips = this.numTrips + 1;
+  }
+
+  //Get the direction we're going. If the floor is greater than
+  //our position then we need to go up (+1) if the floor is less
+  //than our position we need to go down (-1)
+  getDirection(floor) {
+    if (floor >= this.position) {
+      return 1
+    }
+    else if (floor < this.position) {
+      return -1
+    }
   }
 }
 
@@ -68,7 +92,9 @@ class ElevatorController {
     var selectedElevator;
 
     //Loop through each elevator object. Check if it needs service or is
-    //currently moving. Go to the next object if either is true.
+    //currently moving (We'll adjust the moving to account for occupied later).
+    //Go to the next object if either is true.
+    //
     //Get the distance for that elevator and replace the selected elevator
     //until the smallest distance is found. Return the selected elevator.
     this.elevators.forEach(function(currentElevator) {
