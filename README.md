@@ -22,7 +22,7 @@ number of floors. Assume ground/min of 1.
 
 7. When an elevator request is made, the unoccupied elevator closest to it will answer the call, unless an occupied elevator is moving and will pass that floor on its way. The exception is that if an unoccupied elevator is already stopped at that floor, then it will always have the highest priority answering that call.
 
-(I think done? hasPassed takes care of moving elevators. Although I didn't anticipate our objects having an array of call requests to handle all at once)
+(DONE)
 
 8. The elevator should keep track of how many trips it has made, and how many floors it has passed. The elevator should go into maintenance mode after 100 trips, and stop
 functioning until serviced, therefore not be available for elevator calls.

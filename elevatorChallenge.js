@@ -13,14 +13,20 @@ class Elevator {
     return this.position;
   }
 
+  //Check if its open
   isOpen() {
     return this.open;
   }
 
+  //Check if we need service.
   needsService() {
     return this.numTrips >= 100;
   }
 
+  //We'll know if we've passed a floor based on whether we're going up or down
+  //if we're going down and the floor is greater than our position, we've passed
+  //it. If we're going up and the floor is less than our position, we've passed it
+  //Elevators with no direction cannot pass floors.
   hasPassed(floor) {
     if (this.direction == 0) {
       return false;
@@ -41,14 +47,29 @@ class Elevator {
     return this.direction != 0;
   }
 
+  //If we're going up then we want to sort by the smallest value. Because
+  //elevators can only take requests that they are going to pass we will have
+  //an elevator at floor 3 that can take requests for floor 4 and 5. We don't
+  //want to pass floors that are on the way. The opposite is true for going down
+  //if there is no direction that means that the elevator is stopped and should
+  //take the floor we want to go to (there should then only be the floor requested
+  //in the floorRequests array).
   addRequests(floorAt, floorReq) {
+
+    if (this.direction = 0) {
+      this.floorRequests.push(floorReq)
+      return [floorAt]
+    }
+
     this.floorRequests.push(floorAt)
     this.floorRequests.push(floorReq)
 
-    if (this.direction == 1 ) {
-      this.floorRequests = this.floorRequests.sort();
+    if (this.direction == 1) {
+      this.floorRequests = this.floorRequests.sort((a, b) => a - b);
     }
-
+    else if (this.direction == -1) {
+      this.floorRequests = this.floorRequest.sort((a, b) => b - a);
+    }
   }
   //This situation we use this in is for floor requests. If there is more than one
   //occupant then this elevator is moving. If so then we need to pick the closest
@@ -106,6 +127,7 @@ class ElevatorController {
     this.maxFloor = numFloors;
   }
 
+  //Get all the elevators for basic testing in the online IDE
   getAllElevators() {
     return this.elevators
   }
@@ -160,6 +182,10 @@ class ElevatorController {
     return selectedElevator
   }
 
+  //Check if our floor requested and where the floor was requested from
+  //are valid inputs. Throw errors if they are and return a boolean to
+  //continue escaping the request. I don't think javascript errors stop
+  //code execution.
   isInputValid(floorAt, floorReq) {
     try {
       if(floorAt < this.minFloor ||
